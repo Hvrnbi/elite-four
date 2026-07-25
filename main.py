@@ -52,7 +52,7 @@ def next_game():
 
 def reset():
     # To finish
-    global game_number, miss_n_state, flour_qtt, flour_qtt_inc, sugar_qtt, sugar_qtt_inc, eggs_qtt, eggs_qtt_inc, milk_qtt, milk_qtt_inc, ingredients_height, mister_c_state, mister_c_dialog, skyline_image, ptimage, mister_c_input, mister_c_score
+    global game_number, miss_n_state, flour_qtt, flour_qtt_inc, sugar_qtt, sugar_qtt_inc, eggs_qtt, eggs_qtt_inc, milk_qtt, milk_qtt_inc, ingredients_height, mister_c_state, mister_c_dialog, mister_c_result, skyline_image, ptimage, mister_c_input, mister_c_score
     game_number = 4
 
     # Miss N
@@ -205,6 +205,7 @@ mister_c_state = 0
 images_list = ["images/bucharest.png", "images/dallas.png", "images/dublin.png", "images/kualalumpur.png", "images/lagos.png", "images/lyon.png", "images/warsaw.png"]
 mister_c_answers = {"images/bucharest.png": ["bucharest", "Bucharest", "BUCHAREST"], "images/dallas.png": ["dallas", "Dallas", "DALLAS"], "images/dublin.png": ["dublin", "Dublin", "DUBLIN"], "images/kualalumpur.png": ["kuala lumpur", "Kuala lumpur", "Kuala Lumpur", "KUALA LUMPUR"], "images/lagos.png": ["lagos", "Lagos", "LAGOS"], "images/lyon.png": ["lyon", "Lyon", "LYON"], "images/warsaw.png": ["warsaw", "Warsaw", "WARSAW"]}
 mister_c_dialog: int
+mister_c_result: int
 skyline_image: int
 ptimage = None
 mister_c_input = tk.Entry(root)
@@ -230,7 +231,7 @@ Press SPACE to start", font=("Helvetica", 12), fill="#0b6b0b")
         cv.itemconfig(mister_c_dialog, text="Which city do you think it is ?")
         ptimage = ImageTk.PhotoImage(file=images_list[0])
         skyline_image = cv.create_image(640, 242, image=ptimage, anchor=tk.CENTER)
-        mister_c_input.place(x=640, y=680, anchor=tk.CENTER)
+        mister_c_input.place(x=640, y=632, anchor=tk.CENTER)
 
     elif mister_c_state == 2:
         cv.itemconfig(mister_c_dialog, text="Which city do you think it is ?")
@@ -250,11 +251,19 @@ Press SPACE to start", font=("Helvetica", 12), fill="#0b6b0b")
         root.after(5000, reset)
 
 def mister_c_verif():
-    global mister_c_score
+    global mister_c_score, mister_c_result
     if mister_c_input.get() in mister_c_answers[images_list[mister_c_state - 1]]:
         mister_c_score += 1
+        if mister_c_state == 1:
+            mister_c_result = cv.create_text(640, 680, text="Correct!", font=("Helvetica", 12), fill="#0b6b0b")
+        else:
+            cv.itemconfig(mister_c_result, text="Correct!")
         return True
     else:
+        if mister_c_state == 1:
+            mister_c_result = cv.create_text(640, 680, text="Wrong!", font=("Helvetica", 12), fill="#0b6b0b")
+        else:
+            cv.itemconfig(mister_c_result, text="Wrong!")
         return False
         
         
