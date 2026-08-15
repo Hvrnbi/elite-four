@@ -1,5 +1,5 @@
 import tkinter as tk
-from random import shuffle
+from random import shuffle, randint, choice
 from PIL import Image, ImageTk
 
 # Window
@@ -15,7 +15,7 @@ cv.place(x=0, y=0)
 
 # Game variables
 game_number = 4
-games_list = ["N", "C"] # To finish
+games_list = ["E"] # To finish
 
 
 # Creation of the start menu
@@ -47,12 +47,16 @@ def next_game():
             miss_n_init()
         elif games_list[game_number] == "C":
             mister_c_init()
+        elif games_list[game_number] == "E":
+            mister_e_init()
     else:
         print("THE END")        # TODO the end
 
 def reset():
     # To finish
-    global game_number, miss_n_state, flour_qtt, flour_qtt_inc, sugar_qtt, sugar_qtt_inc, eggs_qtt, eggs_qtt_inc, milk_qtt, milk_qtt_inc, ingredients_height, mister_c_state, mister_c_dialog, mister_c_result, skyline_image, ptimage, mister_c_input, mister_c_score
+    global game_number, miss_n_state, flour_qtt, flour_qtt_inc, sugar_qtt, sugar_qtt_inc, eggs_qtt, eggs_qtt_inc, milk_qtt, milk_qtt_inc, ingredients_height, mister_c_state,\
+mister_c_dialog, mister_c_result, skyline_image, ptimage, mister_c_input, mister_c_score, mister_e_state, mister_e_time, mister_e_time_count, mister_e_timer, mask_images,\
+masks_list, happy_mask, mister_e_dialog
     game_number = 4
 
     # Miss N
@@ -75,6 +79,16 @@ def reset():
     mister_c_input = tk.Entry(root)
     mister_c_input.bind("<Return>", enter)
     mister_c_score = 0
+
+    # Mister E
+    mister_e_state = 0
+    mister_e_time = 0
+    mister_e_time_count = 0
+    mister_e_timer = 0
+    mask_images = []
+    masks_list = []
+    happy_mask = {}
+    mister_e_dialog = 0
 
     menu()
 
@@ -112,7 +126,7 @@ def miss_n_init():
     sugar_rect = cv.create_rectangle(220, 160, 360, 280, fill="#ffb34f", outline="#ffb34f")
     sugar_top = cv.create_polygon(220, 160, 360, 160, 290, 100, fill="#ffb34f", outline="#ffb34f")
     sugar_text = cv.create_text(290, 88, text="SUGAR", font=("Helvetica", 16), fill="#163226")
-    eggs_oval = cv.create_oval(400, 100, 540, 280, fill="#e6c493", outline="#e6c493")
+    eggs_oval =  cv.create_oval(400, 100, 540, 280, fill="#e6c493", outline="#e6c493")
     eggs_text = cv.create_text(470, 88, text="EGGS", font=("Helvetica", 16), fill="#163226")
     milk_rect = cv.create_rectangle(580, 160, 720, 280, fill="#ffffff", outline="#ffffff")
     milk_top = cv.create_rectangle(580, 100, 720, 160, fill="#0000cc", outline="#0000cc")
@@ -266,13 +280,157 @@ def mister_c_verif():
             cv.itemconfig(mister_c_result, text="Wrong!")
         return False
         
+
+# Mister E game
+mister_e_state = 0
+mister_e_time = 0
+mister_e_time_count = 0
+mister_e_timer: int
+mask_images = []
+masks_list = []
+happy_mask = {}
+mister_e_dialog: int
+
+
+def mister_e_init():
+    bg_rect = cv.create_rectangle(0, 0, 1280, 720, fill="#fda3ff", outline="#fda3ff")
+    draw_dialog_area()
+    dialog_name = cv.create_text(640, 500, text="Mister E", font=("Helvetica", 16, "bold"), fill="#730075")
+    mister_e_game()
+
+def mister_e_game():
+    global mister_e_dialog, mister_e_state, mister_e_time, mister_e_time_count, mister_e_timer
+    if mister_e_state == 0:
+        mister_e_dialog = cv.create_text(640, 606, text="Hello! I'm Mister E, nice to meet you!\n\
+In my game, you'll see some comedy masks, and you'll just have to find the happy one.\n\
+Good luck!\n\
+Press SPACE to start.", font=("Helvetica", 12), fill="#730075")
+
+    elif mister_e_state == 1:
+        spawn_masks()
+        mister_e_state = 2
+        mister_e_time = 15
+        mister_e_timer = cv.create_text(1260, 700, text="15", font=("Helvetica", 16, "bold"), fill="#730075")
+        mister_e_game()
+
+    elif mister_e_state == 2:
+        move_masks()
+        mister_e_countdown()
+        root.after(100, mister_e_game)
+
+    elif mister_e_state == 3:
+        mister_e_clear()
+        cv.itemconfig(mister_e_dialog, text="Well done! But it was the easy level,\nPress SPACE to continue.")
+
+    elif mister_e_state == 4:
+        spawn_masks()
+        mister_e_time = 20
+        cv.itemconfig(mister_e_timer, text="20")
+        mister_e_time_count = 0
+        mister_e_state = 5
+        mister_e_game()
+
+    elif mister_e_state == 5:
+        move_masks()
+        mister_e_countdown()
+        root.after(100, mister_e_game)
+
+    elif mister_e_state == 6:
+        mister_e_clear()
+        cv.itemconfig(mister_e_dialog, text="Good job! You're ready to the next step,\nPress SPACE to continue.")
+
+    elif mister_e_state == 7:
+        spawn_masks()
+        mister_e_time = 25
+        cv.itemconfig(mister_e_timer, text="25")
+        mister_e_time_count = 0
+        mister_e_state = 8
+        mister_e_game()
+
+    elif mister_e_state == 8:
+        move_masks()
+        mister_e_countdown()
+        root.after(100, mister_e_game)
+
+    elif mister_e_state == 9:
+        mister_e_clear()
+        cv.itemconfig(mister_e_dialog, text="Well played! The next one is the last one, good luck!\nPress SPACE to continue.")
+
+    elif mister_e_state == 10:
+        spawn_masks()
+        mister_e_time = 30
+        cv.itemconfig(mister_e_timer, text="30")
+        mister_e_time_count = 0
+        mister_e_state = 11
+        mister_e_game()
+
+    elif mister_e_state == 11:
+        move_masks()
+        mister_e_countdown()
+        root.after(100, mister_e_game)
+
+    elif mister_e_state == 12:
+        mister_e_clear()
+        cv.itemconfig(mister_e_dialog, text="You did it!\nPress SPACE to continue.")
         
+    elif mister_e_state == 13:
+        mister_e_clear()
+        cv.itemconfig(mister_e_dialog, text="Oh nooooo, the time is up!\nyou'll be luckier next time darling.")
+        root.after(5000, reset)
+
+def spawn_masks():
+    global masks_list, happy_mask, mask_images
+    mask_images.append(ImageTk.PhotoImage(file="images/happy.png"))
+    happy_mask = {"id": cv.create_image(randint(0, 1280), randint(0, 500), image=mask_images[0], anchor=tk.CENTER), "velx": mask_vel_gen(), "vely": mask_vel_gen()}
+    cv.tag_bind(happy_mask["id"], "<Button-1>", button1)
+    for i in range(40 * mister_e_state // 3 + 1):
+        mask_images.append(ImageTk.PhotoImage(file=choice(["images/sad.png", "images/fastfood.png"])))
+        masks_list.append({"id": cv.create_image(randint(0, 1280), randint(0, 500), image=mask_images[i + 1], anchor=tk.CENTER), "velx": mask_vel_gen(), "vely": mask_vel_gen()})
+
+def move_masks():
+    global masks_list
+    for mask in masks_list:
+        cv.move(mask["id"], mask["velx"], mask["vely"])
+        if cv.coords(mask["id"])[0] < 0 or 1280 < cv.coords(mask["id"])[0]:
+            mask["velx"] = -mask["velx"]
+        if cv.coords(mask["id"])[1] < 0 or 500 < cv.coords(mask["id"])[1]:
+            mask["vely"] = -mask["vely"]
+    cv.move(happy_mask["id"], happy_mask["velx"], happy_mask["vely"])
+    if cv.coords(happy_mask["id"])[0] < 0 or 1280 < cv.coords(happy_mask["id"])[0]:
+        happy_mask["velx"] = -happy_mask["velx"]
+    if cv.coords(happy_mask["id"])[1] < 0 or 500 < cv.coords(happy_mask["id"])[1]:
+        happy_mask["vely"] = -happy_mask["vely"]
+
+def mask_vel_gen():
+    vel = randint(6, 12)
+    sign = randint(0, 1)
+    if sign == 1:
+        vel = -vel
+    return vel
+
+def mister_e_clear():
+    global mask_images, masks_list, happy_mask
+    for elt in masks_list:
+        cv.delete(elt)
+    mask_images = []
+    masks_list = []
+    happy_mask = {}
+
+
+def mister_e_countdown():
+    global mister_e_time, mister_e_time_count, mister_e_timer, mister_e_state
+    mister_e_time_count += 1
+    if mister_e_time_count % 10 == 0:
+        mister_e_time -= 1
+        cv.itemconfig(mister_e_timer, text=str(mister_e_time))
+        if mister_e_time == 0:
+            mister_e_state = 13
 
 
 # Handle the pressed keys
 
 def space(_):
-    global game_number, miss_n_state, ingredients_height, mister_c_state
+    global game_number, miss_n_state, ingredients_height, mister_c_state, mister_e_state
     if game_number < len(games_list):
         if games_list[game_number] == "N":
             if miss_n_state == 0:
@@ -306,10 +464,21 @@ def space(_):
             elif mister_c_state == 4:
                 game_number += 1
                 next_game()
-        
+
+        elif games_list[game_number] == "E":
+            if mister_e_state in [0, 3, 6, 9]:
+                mister_e_state += 1
+                mister_e_game()
+            elif mister_e_state == 12:
+                game_number += 1
+                next_game()
+
+    elif game_number == 4:
+        start()
+
 def enter(_):
     global mister_c_state, mister_c_score
-    if game_number < 4:
+    if game_number < len(games_list):
         if games_list[game_number] == "C":
             if mister_c_state == 1:
                 mister_c_verif()
@@ -334,9 +503,15 @@ def enter(_):
                     mister_c_game()
                 mister_c_input.destroy()
 
+def button1(_):
+    global mister_e_state
+    if game_number < len(games_list):
+        if games_list[game_number] == "E":
+            if mister_e_state in [2, 5, 8, 11]:
+                mister_e_state += 1
+
 root.bind("<space>", space)
 mister_c_input.bind("<Return>", enter)
-
 
 menu()
 root.mainloop()
