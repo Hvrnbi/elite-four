@@ -18,7 +18,6 @@ cv.place(x=0, y=0)
 # Game variables
 game_number = 4
 games_list = ["N", "C", "E", "W"]
-games_list = []
 
 
 # Creation of the start menu
@@ -36,7 +35,6 @@ def menu():
 
 
 def start():
-    # To finish
     global game_number, games_list
     shuffle(games_list)
     game_number = 0
@@ -64,7 +62,6 @@ def next_game():
         cv.tag_bind(github_link, "<Button-1>", lambda _ : wb.open("https://github.com/Hvrnbi/elite-four"))
 
 def reset():
-    # To finish
     global game_number, miss_n_state, flour_qtt, flour_qtt_inc, sugar_qtt, sugar_qtt_inc, eggs_qtt, eggs_qtt_inc, milk_qtt, milk_qtt_inc, ingredients_height, mister_c_state,\
 mister_c_dialog, mister_c_result, skyline_image, ptimage, mister_c_input, mister_c_score, mister_e_state, mister_e_time, mister_e_time_count, mister_e_timer, mask_images,\
 masks_list, happy_mask, mister_e_dialog, miss_w_state, miss_w_dialog, notes_id, f_list, g_list, h_list, j_list, k_list, l_list, miss_w_score, miss_w_score_text
