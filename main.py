@@ -1,6 +1,8 @@
 import tkinter as tk
 from random import shuffle, randint, choice
 from PIL import Image, ImageTk
+from vlc import MediaPlayer
+import webbrowser as wb
 
 # Window
 root = tk.Tk()
@@ -15,7 +17,8 @@ cv.place(x=0, y=0)
 
 # Game variables
 game_number = 4
-games_list = ["E"] # To finish
+games_list = ["N", "C", "E", "W"]
+games_list = []
 
 
 # Creation of the start menu
@@ -49,14 +52,22 @@ def next_game():
             mister_c_init()
         elif games_list[game_number] == "E":
             mister_e_init()
+        elif games_list[game_number] == "W":
+            miss_w_init()
     else:
-        print("THE END")        # TODO the end
+        # The END
+        cv.create_rectangle(0, 0, 1280, 720, fill="#b7ddeb", outline="#b7ddeb")
+        cv.create_text(640, 100, text="Well played!", font=("Helvetica", 64, "bold"), fill="#194a5c")
+        cv.create_text(640, 310, text="Thank you for playing <3", font=("Helvetica", 48, "bold"), fill="#194a5c")
+        cv.create_text(640, 520, text="Goodbyyyyye", font=("Helvetica", 64, "bold"), fill="#194a5c")
+        github_link = cv.create_text(640, 660, text="PS : You can click here to put a star ⭐️ on GitHub :)", font=("Helvetica", 16, "bold"), fill="#194a5c")
+        cv.tag_bind(github_link, "<Button-1>", lambda _ : wb.open("https://github.com/Hvrnbi/elite-four"))
 
 def reset():
     # To finish
     global game_number, miss_n_state, flour_qtt, flour_qtt_inc, sugar_qtt, sugar_qtt_inc, eggs_qtt, eggs_qtt_inc, milk_qtt, milk_qtt_inc, ingredients_height, mister_c_state,\
 mister_c_dialog, mister_c_result, skyline_image, ptimage, mister_c_input, mister_c_score, mister_e_state, mister_e_time, mister_e_time_count, mister_e_timer, mask_images,\
-masks_list, happy_mask, mister_e_dialog
+masks_list, happy_mask, mister_e_dialog, miss_w_state, miss_w_dialog, notes_id, f_list, g_list, h_list, j_list, k_list, l_list, miss_w_score, miss_w_score_text
     game_number = 4
 
     # Miss N
@@ -89,6 +100,19 @@ masks_list, happy_mask, mister_e_dialog
     masks_list = []
     happy_mask = {}
     mister_e_dialog = 0
+
+    # Miss W
+    miss_w_state = 0
+    miss_w_dialog = 0
+    notes_id = []
+    f_list = [[i, 0] for i in range(len(notes_list)) if notes_list[i][0] == 202]
+    g_list = [[i, 0] for i in range(len(notes_list)) if notes_list[i][0] == 384]
+    h_list = [[i, 0] for i in range(len(notes_list)) if notes_list[i][0] == 566]
+    j_list = [[i, 0] for i in range(len(notes_list)) if notes_list[i][0] == 748]
+    k_list = [[i, 0] for i in range(len(notes_list)) if notes_list[i][0] == 930]
+    l_list = [[i, 0] for i in range(len(notes_list)) if notes_list[i][0] == 1112]
+    miss_w_score = 0
+    miss_w_score_text = 0
 
     menu()
 
@@ -310,7 +334,7 @@ Press SPACE to start.", font=("Helvetica", 12), fill="#730075")
         spawn_masks()
         mister_e_state = 2
         mister_e_time = 15
-        mister_e_timer = cv.create_text(1260, 700, text="15", font=("Helvetica", 16, "bold"), fill="#730075")
+        mister_e_timer = cv.create_text(1252, 700, text="15", font=("Helvetica", 16, "bold"), fill="#730075")
         mister_e_game()
 
     elif mister_e_state == 2:
@@ -427,10 +451,91 @@ def mister_e_countdown():
             mister_e_state = 13
 
 
+# Miss W game
+miss_w_state = 0
+miss_w_dialog: int
+notes_list = [[748, -68], [930, -118], [1112, -168], [566, -314], [384, -364], [202, -414], [748, -524], [566, -624], [384, -724], [930, -724], [384, -774], [930, -774], [384, -824], [930, -824], [566, -968], [748, -1084], [566, -1162], [384, -1212], [202, -1262], [748, -1424], [384, -1524], [1112, -1624], [202, -1758],\
+[748, -68 - 1808], [930, -118 - 1808], [1112, -168 - 1808], [566, -314 - 1808], [384, -364 - 1808], [202, -414 - 1808], [748, -524 - 1808], [566, -624 - 1808], [384, -724 - 1860], [930, -724 - 1860], [384, -774 - 1860], [930, -774 - 1860], [384, -824 - 1860], [930, -824 - 1860], [566, -968 - 1860], [748, -1084 - 1860], [566, -1162 - 1880], [384, -1212 - 1860], [202, -1262 - 1860], [748, -1424 - 1860], [384, -1524 - 1860], [1112, -1624 - 1860], [202, -1758 - 1860],\
+[748, -68 - 3680], [930, -118 - 3680], [1112, -168 - 3680], [566, -314 - 3680], [384, -364 - 3680], [202, -414 - 3680], [748, -524 - 3700], [566, -624 - 3700], [384, -724 - 3700], [930, -724 - 3700], [384, -774 - 3700], [930, -774 - 3700], [384, -824 - 3700], [930, -824 - 3700], [566, -968 - 3700], [748, -1084 - 3700], [566, -1162 - 3700], [384, -1212 - 3700], [202, -1262 - 3700], [748, -1424 - 3700], [384, -1524 - 3700], [1112, -1624 - 3700], [202, -1758 - 3700],\
+[748, -68 - 5500], [930, -118 - 5500], [1112, -168 - 5500], [566, -314 - 5500], [384, -364 - 5500], [202, -414 - 5500], [748, -524 - 5500], [566, -624 - 5500], [384, -724 - 5500], [930, -724 - 5500], [384, -774 - 5500], [930, -774 - 5500], [384, -824 - 5500], [930, -824 - 5500], [566, -968 - 5500], [748, -1084 - 5500], [566, -1162 - 5500], [384, -1212 - 5500], [202, -1262 - 5500], [748, -1424 - 5500], [384, -1524 - 5500], [1112, -1624 - 5500], [202, -1758 - 5500]]
+notes_id = []
+f_list = [[i, 0] for i in range(len(notes_list)) if notes_list[i][0] == 202]
+g_list = [[i, 0] for i in range(len(notes_list)) if notes_list[i][0] == 384]
+h_list = [[i, 0] for i in range(len(notes_list)) if notes_list[i][0] == 566]
+j_list = [[i, 0] for i in range(len(notes_list)) if notes_list[i][0] == 748]
+k_list = [[i, 0] for i in range(len(notes_list)) if notes_list[i][0] == 930]
+l_list = [[i, 0] for i in range(len(notes_list)) if notes_list[i][0] == 1112]
+miss_w_score = 0
+miss_w_score_text = 0
+
+def miss_w_init():
+    bg_rect = cv.create_rectangle(0, 0, 1280, 720, fill="#c892e0", outline="#c892e0")
+    draw_dialog_area()
+    dialog_name = cv.create_text(640, 500, text="Miss W", font=("Helvetica", 16, "bold"), fill="#481a5b")
+    miss_w_game()
+
+def miss_w_game():
+    global miss_w_state, miss_w_dialog, miss_w_score_text
+    if miss_w_state == 0:
+        miss_w_dialog = cv.create_text(640, 606, text="Helloooo, I'm Miss W!\n\
+My game is a rythm game, good luck!\n\
+Press SPACE to start.", font=("Helvetica", 12), fill="#481a5b")
+    
+    elif miss_w_state == 1:
+        miss_w_draw_ui()
+        spawn_notes()
+        MediaPlayer("audio/scottish.mp3").play()
+        miss_w_state = 2
+        miss_w_game()
+        miss_w_score_text = cv.create_text(1252, 700, text="0", font=("Helvetica", 16, "bold"), fill="#481a5b")
+
+    elif miss_w_state == 2:
+        if cv.coords(notes_id[-1])[1] < 500:
+            move_notes()
+            root.after(20, miss_w_game)
+        else:
+            if miss_w_score < 840:
+                miss_w_state = 3
+                miss_w_game()
+            else:
+                miss_w_state = 4
+                miss_w_game()
+
+    elif miss_w_state == 3:
+        cv.itemconfig(miss_w_dialog, text="You need more training, come back later !")
+        root.after(5000, reset)
+
+    elif miss_w_state == 4:
+        cv.itemconfig(miss_w_dialog, text="Gg! That was a beautiful scottish! :D\nPress SPACE to continue")
+
+
+def miss_w_draw_ui():
+    cv.create_rectangle(0, 438, 1280, 442, fill="#ffffff", outline="#ffffff")
+    cv.create_text(182, 460, text="F", font=("Helvetica", 16, "bold"), fill="#ffffff")
+    cv.create_text(364, 460, text="G", font=("Helvetica", 16, "bold"), fill="#ffffff")
+    cv.create_text(546, 460, text="H", font=("Helvetica", 16, "bold"), fill="#ffffff")
+    cv.create_text(728, 460, text="J", font=("Helvetica", 16, "bold"), fill="#ffffff")
+    cv.create_text(910, 460, text="K", font=("Helvetica", 16, "bold"), fill="#ffffff")
+    cv.create_text(1092, 460, text="L", font=("Helvetica", 16, "bold"), fill="#ffffff")
+
+def spawn_notes():
+    global notes_id
+    for note in notes_list:
+        notes_id.append(cv.create_text(note[0], note[1], text="♩", font=("Helvetica", 64, "bold"), fill="#ffffff"))
+
+def move_notes():
+    global notes_id
+    for i in range(len(notes_id)):
+        if cv.coords(notes_id[i])[1] < 500:
+            cv.move(notes_id[i], 0, 4)
+            if cv.coords(notes_id[i])[1] >= 500:
+                cv.move(notes_id[i], 0, 500)
+
+
 # Handle the pressed keys
 
 def space(_):
-    global game_number, miss_n_state, ingredients_height, mister_c_state, mister_e_state
+    global game_number, miss_n_state, ingredients_height, mister_c_state, mister_e_state, miss_w_state
     if game_number < len(games_list):
         if games_list[game_number] == "N":
             if miss_n_state == 0:
@@ -473,6 +578,14 @@ def space(_):
                 game_number += 1
                 next_game()
 
+        elif games_list[game_number] == "W":
+            if miss_w_state == 0:
+                miss_w_state = 1
+                miss_w_game()
+            elif miss_w_state == 4:
+                game_number += 1
+                next_game()
+
     elif game_number == 4:
         start()
 
@@ -510,7 +623,73 @@ def button1(_):
             if mister_e_state in [2, 5, 8, 11]:
                 mister_e_state += 1
 
+def f(_):
+    global miss_w_score, f_list
+    if miss_w_state == 2:
+        for note in f_list:
+            if note[1] == 0 and 408 <= cv.coords(notes_id[note[0]])[1] <= 472:
+                note[1] = 1
+                miss_w_score += 10
+                cv.itemconfig(miss_w_score_text, text=str(miss_w_score))
+                cv.itemconfig(notes_id[note[0]], fill="#a9e092")
+
+def g(_):
+    global miss_w_score, g_list
+    if miss_w_state == 2:
+        for note in g_list:
+            if note[1] == 0 and 408 <= cv.coords(notes_id[note[0]])[1] <= 472:
+                note[1] = 1
+                miss_w_score += 10
+                cv.itemconfig(miss_w_score_text, text=str(miss_w_score))
+                cv.itemconfig(notes_id[note[0]], fill="#a9e092")
+
+def h(_):
+    global miss_w_score, h_list
+    if miss_w_state == 2:
+        for note in h_list:
+            if note[1] == 0 and 408 <= cv.coords(notes_id[note[0]])[1] <= 472:
+                note[1] = 1
+                miss_w_score += 10
+                cv.itemconfig(miss_w_score_text, text=str(miss_w_score))
+                cv.itemconfig(notes_id[note[0]], fill="#a9e092")
+
+def j(_):
+    global miss_w_score, j_list
+    if miss_w_state == 2:
+        for note in j_list:
+            if note[1] == 0 and 408 <= cv.coords(notes_id[note[0]])[1] <= 472:
+                note[1] = 1
+                miss_w_score += 10
+                cv.itemconfig(miss_w_score_text, text=str(miss_w_score))
+                cv.itemconfig(notes_id[note[0]], fill="#a9e092")
+
+def k(_):
+    global miss_w_score, k_list
+    if miss_w_state == 2:
+        for note in k_list:
+            if note[1] == 0 and 408 <= cv.coords(notes_id[note[0]])[1] <= 472:
+                note[1] = 1
+                miss_w_score += 10
+                cv.itemconfig(miss_w_score_text, text=str(miss_w_score))
+                cv.itemconfig(notes_id[note[0]], fill="#a9e092")
+
+def l(_):
+    global miss_w_score, l_list
+    if miss_w_state == 2:
+        for note in l_list:
+            if note[1] == 0 and 408 <= cv.coords(notes_id[note[0]])[1] <= 472:
+                note[1] = 1
+                miss_w_score += 10
+                cv.itemconfig(miss_w_score_text, text=str(miss_w_score))
+                cv.itemconfig(notes_id[note[0]], fill="#a9e092")
+
 root.bind("<space>", space)
+root.bind("f", f)
+root.bind("g", g)
+root.bind("h", h)
+root.bind("j", j)
+root.bind("k", k)
+root.bind("l", l)
 mister_c_input.bind("<Return>", enter)
 
 menu()
