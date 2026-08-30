@@ -1,7 +1,7 @@
 import tkinter as tk
 from random import shuffle, randint, choice
 from PIL import Image, ImageTk
-from vlc import MediaPlayer
+from pygame import mixer
 import webbrowser as wb
 
 # Window
@@ -481,7 +481,10 @@ Press SPACE to start.", font=("Helvetica", 12), fill="#481a5b")
     elif miss_w_state == 1:
         miss_w_draw_ui()
         spawn_notes()
-        MediaPlayer("audio/scottish.mp3").play()
+        mixer.init()
+        mixer.music.load("audio/scottish.mp3")
+        mixer.music.set_volume(1.0)
+        mixer.music.play()
         miss_w_state = 2
         miss_w_game()
         miss_w_score_text = cv.create_text(1252, 700, text="0", font=("Helvetica", 16, "bold"), fill="#481a5b")
