@@ -3,6 +3,9 @@ from random import shuffle, randint, choice
 from PIL import Image, ImageTk
 from pygame import mixer
 import webbrowser as wb
+import os
+
+basedir = os.path.dirname(__file__)
 
 # Window
 root = tk.Tk()
@@ -18,6 +21,7 @@ cv.place(x=0, y=0)
 # Game variables
 game_number = 4
 games_list = ["N", "C", "E", "W"]
+ended = False
 
 
 # Creation of the start menu
@@ -42,6 +46,7 @@ def start():
     next_game()
 
 def next_game():
+    global ended
     cv.delete("all")
     if game_number < len(games_list):
         if games_list[game_number] == "N":
@@ -60,6 +65,7 @@ def next_game():
         cv.create_text(640, 520, text="Goodbyyyyye", font=("Helvetica", 64, "bold"), fill="#194a5c")
         github_link = cv.create_text(640, 660, text="PS : You can click here to put a star ⭐️ on GitHub :)", font=("Helvetica", 16, "bold"), fill="#194a5c")
         cv.tag_bind(github_link, "<Button-1>", lambda _ : wb.open("https://github.com/Hvrnbi/elite-four"))
+        ended = True
 
 def reset():
     global game_number, miss_n_state, flour_qtt, flour_qtt_inc, sugar_qtt, sugar_qtt_inc, eggs_qtt, eggs_qtt_inc, milk_qtt, milk_qtt_inc, ingredients_height, mister_c_state,\
@@ -237,8 +243,8 @@ def miss_n_end():
 
 # Mister C game
 mister_c_state = 0
-images_list = ["images/bucharest.png", "images/dallas.png", "images/dublin.png", "images/kualalumpur.png", "images/lagos.png", "images/lyon.png", "images/warsaw.png"]
-mister_c_answers = {"images/bucharest.png": ["bucharest", "Bucharest", "BUCHAREST"], "images/dallas.png": ["dallas", "Dallas", "DALLAS"], "images/dublin.png": ["dublin", "Dublin", "DUBLIN"], "images/kualalumpur.png": ["kuala lumpur", "Kuala lumpur", "Kuala Lumpur", "KUALA LUMPUR"], "images/lagos.png": ["lagos", "Lagos", "LAGOS"], "images/lyon.png": ["lyon", "Lyon", "LYON"], "images/warsaw.png": ["warsaw", "Warsaw", "WARSAW"]}
+images_list = [os.path.join(basedir, "images/bucharest.png"), os.path.join(basedir, "images/dallas.png"), os.path.join(basedir, "images/dublin.png"), os.path.join(basedir, "images/kualalumpur.png"), os.path.join(basedir, "images/lagos.png"), os.path.join(basedir, "images/lyon.png"), os.path.join(basedir, "images/warsaw.png")]
+mister_c_answers = {os.path.join(basedir, "images/bucharest.png"): ["bucharest", "Bucharest", "BUCHAREST"], os.path.join(basedir, "images/dallas.png"): ["dallas", "Dallas", "DALLAS"], os.path.join(basedir, "images/dublin.png"): ["dublin", "Dublin", "DUBLIN"], os.path.join(basedir, "images/kualalumpur.png"): ["kuala lumpur", "Kuala lumpur", "Kuala Lumpur", "KUALA LUMPUR"], os.path.join(basedir, "images/lagos.png"): ["lagos", "Lagos", "LAGOS"], os.path.join(basedir, "images/lyon.png"): ["lyon", "Lyon", "LYON"], os.path.join(basedir, "images/warsaw.png"): ["warsaw", "Warsaw", "WARSAW"]}
 mister_c_dialog: int
 mister_c_result: int
 skyline_image: int
@@ -401,11 +407,11 @@ Press SPACE to start.", font=("Helvetica", 12), fill="#730075")
 
 def spawn_masks():
     global masks_list, happy_mask, mask_images
-    mask_images.append(ImageTk.PhotoImage(file="images/happy.png"))
+    mask_images.append(ImageTk.PhotoImage(file=os.path.join(basedir, "images/happy.png")))
     happy_mask = {"id": cv.create_image(randint(0, 1280), randint(0, 500), image=mask_images[0], anchor=tk.CENTER), "velx": mask_vel_gen(), "vely": mask_vel_gen()}
     cv.tag_bind(happy_mask["id"], "<Button-1>", button1)
     for i in range(40 * mister_e_state // 3 + 1):
-        mask_images.append(ImageTk.PhotoImage(file=choice(["images/sad.png", "images/fastfood.png"])))
+        mask_images.append(ImageTk.PhotoImage(file=choice([os.path.join(basedir, "images/sad.png"), os.path.join(basedir, "images/fastfood.png")])))
         masks_list.append({"id": cv.create_image(randint(0, 1280), randint(0, 500), image=mask_images[i + 1], anchor=tk.CENTER), "velx": mask_vel_gen(), "vely": mask_vel_gen()})
 
 def move_masks():
@@ -482,7 +488,7 @@ Press SPACE to start.", font=("Helvetica", 12), fill="#481a5b")
         miss_w_draw_ui()
         spawn_notes()
         mixer.init()
-        mixer.music.load("audio/scottish.mp3")
+        mixer.music.load(os.path.join(basedir, "audio/scottish.mp3"))
         mixer.music.set_volume(1.0)
         mixer.music.play()
         miss_w_state = 2
@@ -587,7 +593,10 @@ def space(_):
                 next_game()
 
     elif game_number == 4:
-        start()
+        if not ended:
+            start()
+        else:
+            root.destroy()
 
 def enter(_):
     global mister_c_state, mister_c_score
