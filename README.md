@@ -25,6 +25,7 @@ To run the game from the main.py file, you have to
 ### Build the game from source
 
 To build the game from source, do the steps above (without running the game) and run ```.venv/bin/pip install pyinstaller```.
+
 You should now be able to run ```.venv/bin/pyinstaller main.py --add-data="images:images" --add-data="audio:audio" --hidden-import='PIL._tkinter_finder' --onefile```, and the game should be built !
 
 # Demo
