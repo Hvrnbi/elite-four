@@ -3,8 +3,6 @@
 A small game I made for four of my friends.
 Each of them has a dedicated mini-game, and the goal is to beat them all.
 
-![logo](images/logo.ico)
-
 # Play the game
 
 ### Download an executable file
